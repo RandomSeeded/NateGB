@@ -14,7 +14,7 @@ var Z80 = /** @class */ (function () {
             flags: {
                 zero: false,
                 carry: false,
-                operation: false,
+                subtraction: false,
                 halfCarry: false,
             },
             stackPointer: 0,
@@ -29,7 +29,7 @@ var Z80 = /** @class */ (function () {
         this.registers.flags = {
             zero: false,
             carry: false,
-            operation: false,
+            subtraction: false,
             halfCarry: false,
         };
     };
@@ -54,6 +54,22 @@ var Z80 = /** @class */ (function () {
         }
         // TODO (nw): calculate the half-carry flag here as well
         this.registers[register1] = this.registers[register1] % 256;
+        this.addOneMTime();
+    };
+    /*
+     * Compare value in register 2 to value in register 1
+     * Sets flags (subtraction, zero, and carry) accordingly
+     * TODO (nw): also possibly half-carry? Maybe.
+     */
+    Z80.prototype.compare = function (register1, register2) {
+        var difference = this.registers[register1] - this.registers[register2];
+        this.registers.flags.subtraction = true;
+        if (difference === 0) {
+            this.registers.flags.zero = true;
+        }
+        if (difference < 0) {
+            this.registers.flags.carry = true;
+        }
         this.addOneMTime();
     };
     Z80.prototype.noop = function () {

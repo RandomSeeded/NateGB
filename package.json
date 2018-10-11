@@ -21,7 +21,9 @@
   "scripts": {
     "ava": "ava",
     "tsc": "tsc",
-    "test": "tsc && ava",
+    "ava-watch": "ava --watch",
+    "tsc-watch": "tsc --watch",
+    "test": "tsc --watch & ava --watch",
     "build": "webpack -p",
     "start": "webpack-dev-server -d --content-base ./public"
   },

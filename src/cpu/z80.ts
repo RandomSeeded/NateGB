@@ -20,7 +20,7 @@ interface Registers {
   flags: {
     zero: boolean;
     carry: boolean;
-    operation: boolean;
+    subtraction: boolean;
     halfCarry: boolean;
   };
   stackPointer: number;
@@ -46,7 +46,7 @@ export class Z80 {
       flags: {
         zero: false, // Set if result % 256 === 0
         carry: false, // Set if result > 255
-        operation: false, // Set if last operation was a subtraction
+        subtraction: false, // Set if last operation was a subtraction
         halfCarry: false, // Set if last operation lower half > 15 (why?)
       },
 
@@ -60,16 +60,16 @@ export class Z80 {
     };
   }
 
-  clearFlags() {
+  clearFlags(): void {
     this.registers.flags = {
       zero: false,
       carry: false,
-      operation: false,
+      subtraction: false,
       halfCarry: false,
     };
   }
 
-  addOneMTime() {
+  addOneMTime(): void {
     this.registers.clock = {
       m: 1,
       t: 4,
@@ -80,7 +80,7 @@ export class Z80 {
    * Value in register 2 gets added to the value in register 1
    * The sum is left in register1
    */
-  add(register1: EightBitRegister, register2: EightBitRegister) {
+  add(register1: EightBitRegister, register2: EightBitRegister): void {
     this.registers[register1] += this.registers[register2];
     this.clearFlags();
 
@@ -95,7 +95,25 @@ export class Z80 {
     this.addOneMTime();
   }
 
-  noop() {
+  /*
+   * Compare value in register 2 to value in register 1
+   * Sets flags (subtraction, zero, and carry) accordingly
+   * TODO (nw): also possibly half-carry? Maybe.
+   */
+  compare(register1: EightBitRegister, register2: EightBitRegister): void {
+    const difference = this.registers[register1] - this.registers[register2];
+
+    this.registers.flags.subtraction = true;
+    if (difference === 0) {
+      this.registers.flags.zero = true;
+    }
+    if (difference < 0) {
+      this.registers.flags.carry = true;
+    }
+    this.addOneMTime();
+  }
+
+  noop(): void {
     this.addOneMTime();
   }
 }
