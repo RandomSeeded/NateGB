@@ -21,7 +21,7 @@
   "scripts": {
     "ava": "ava",
     "tsc": "tsc",
-    "test": "ava",
+    "test": "tsc && ava",
     "build": "webpack -p",
     "start": "webpack-dev-server -d --content-base ./public"
   },

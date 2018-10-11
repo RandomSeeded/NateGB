@@ -47,7 +47,7 @@ var Z80 = /** @class */ (function () {
         this.registers[register1] += this.registers[register2];
         this.clearFlags();
         if (this.registers[register1] % 256 === 0) {
-            this.registers.flags.zero = false;
+            this.registers.flags.zero = true;
         }
         if (this.registers[register1] > 255) {
             this.registers.flags.carry = true;
