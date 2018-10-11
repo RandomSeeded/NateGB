@@ -1,0 +1,33 @@
+{
+  "name": "nategb",
+  "version": "1.0.0",
+  "description": "Initial Commit",
+  "main": "index.js",
+  "dependencies": {
+    "clean-webpack-plugin": "0.1.19",
+    "html-webpack-plugin": "3.2.0",
+    "ts-loader": "4.4.2",
+    "typescript": "3.0.1",
+    "webpack": "4.16.5",
+    "webpack-cli": "3.1.0",
+    "webpack-dev-server": "3.1.5"
+  },
+  "devDependencies": {
+    "typescript": "^3.1.2"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "webpack -p",
+    "start": "webpack-dev-server -d --content-base ./public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/RandomSeeded/NateGB.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/RandomSeeded/NateGB/issues"
+  },
+  "homepage": "https://github.com/RandomSeeded/NateGB#readme"
+}
