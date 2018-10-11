@@ -1,4 +1,3 @@
-import { z80 } from './cpu/z80';
+import { Z80 } from './cpu/Z80';
 
-console.log('z80', z80);
-console.log('hi');
+console.log('Z80', Z80);
