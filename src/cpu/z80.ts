@@ -1,8 +1,8 @@
 type EightBitRegister = 'a' | 'b' | 'c' | 'd' | 'e' | 'h' | 'l';
 
 interface Clock {
-  lastInstruction: number;
-  total: number;
+  m: number;
+  t: number;
 }
 
 interface Registers {
@@ -53,8 +53,8 @@ export class Z80 {
 
       // TODO (nw): why does the CPU also keep track of the clock? I'm unclear what's going on here
       clock: {
-        lastInstruction: 0,
-        total: 0,
+        m: 0,
+        t: 0,
       },
     };
   }
@@ -79,18 +79,19 @@ export class Z80 {
     if (this.registers[register1] % 256 === 0) {
       this.registers.flags.zero = false;
     }
+    if (this.registers[register1] > 255) {
+      this.registers.flags.carry = true;
+    }
+    this.registers[register1] = this.registers[register1] % 256;
+    this.registers.clock = {
+      m: 1,
+      t: 4,
+    }
 
     // Z80._r.a += Z80._r.e;                      // Perform addition
     // Z80._r.f = 0;                              // Clear flags
 
     // if(!(Z80._r.a & 255)) Z80._r.f |= 0x80;    // Check for zero
-    // What is this doing? From the inside:
-    // bitwise & with 255. Given that it's an 8bit register, that means
-    // XXXXXXXX & 11111111 => XXXXXXXX.
-    // So this basically means (if XXXXXXX === 0). Unclear why he didn't just do that.
-    // It's basically a modulus operator
-
-
     // if(Z80._r.a > 255) Z80._r.f |= 0x10;       // Check for carry
     // Z80._r.a &= 255;                           // Mask to 8-bits
     // Z80._r.m = 1; Z80._r.t = 4;                // 1 M-time taken
