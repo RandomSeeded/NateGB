@@ -13,12 +13,15 @@
     "webpack-dev-server": "3.1.5"
   },
   "devDependencies": {
+    "ava": "^0.25.0",
     "tslint": "^5.11.0",
     "tslint-loader": "^3.5.4",
     "typescript": "^3.1.2"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "ava": "ava",
+    "tsc": "tsc",
+    "test": "ava",
     "build": "webpack -p",
     "start": "webpack-dev-server -d --content-base ./public"
   },
@@ -31,5 +34,19 @@
   "bugs": {
     "url": "https://github.com/RandomSeeded/NateGB/issues"
   },
-  "homepage": "https://github.com/RandomSeeded/NateGB#readme"
+  "homepage": "https://github.com/RandomSeeded/NateGB#readme",
+  "ava": {
+    "files": [
+      "test/**/*.test.js"
+    ],
+    "source": [
+      "src/*.ts",
+      "src/**/*.ts"
+    ],
+    "concurrency": 5,
+    "verbose": true,
+    "timeout": "10000",
+    "failFast": false,
+    "powerAssert": true
+  }
 }

@@ -1,6 +1,7 @@
 type EightBitRegister = 'a' | 'b' | 'c' | 'd' | 'e' | 'h' | 'l';
 
 interface Clock {
+  // I BELIEVE that t is always m * 4. T is actual mhz, m is 'machine cycles'
   m: number;
   t: number;
 }
@@ -43,10 +44,10 @@ export class Z80 {
       l: 0,
 
       flags: {
-        zero: false,
-        carry: false,
-        operation: false,
-        halfCarry: false,
+        zero: false, // Set if result % 256 === 0
+        carry: false, // Set if result > 255
+        operation: false, // Set if last operation was a subtraction
+        halfCarry: false, // Set if last operation lower half > 15 (why?)
       },
 
       stackPointer: 0,
@@ -68,6 +69,13 @@ export class Z80 {
     };
   }
 
+  addOneMTime() {
+    this.registers.clock = {
+      m: 1,
+      t: 4,
+    };
+  }
+
   /*
    * Value in register 2 gets added to the value in register 1
    * The sum is left in register1
@@ -82,18 +90,12 @@ export class Z80 {
     if (this.registers[register1] > 255) {
       this.registers.flags.carry = true;
     }
+    // TODO (nw): calculate the half-carry flag here as well
     this.registers[register1] = this.registers[register1] % 256;
-    this.registers.clock = {
-      m: 1,
-      t: 4,
-    }
+    this.addOneMTime();
+  }
 
-    // Z80._r.a += Z80._r.e;                      // Perform addition
-    // Z80._r.f = 0;                              // Clear flags
-
-    // if(!(Z80._r.a & 255)) Z80._r.f |= 0x80;    // Check for zero
-    // if(Z80._r.a > 255) Z80._r.f |= 0x10;       // Check for carry
-    // Z80._r.a &= 255;                           // Mask to 8-bits
-    // Z80._r.m = 1; Z80._r.t = 4;                // 1 M-time taken
+  noop() {
+    this.addOneMTime();
   }
 }
