@@ -9,7 +9,7 @@ test('adds to a register and increments the clock', t => {
   t.is(z80.registers.clock.m, 0);
   t.is(z80.registers.clock.t, 0);
 
-  z80.ADDR_e();
+  z80.ADDr_e();
   t.is(z80.registers.a, 1);
   t.is(z80.registers.e, 1);
   t.is(z80.registers.clock.m, 1);
@@ -23,7 +23,7 @@ test('it correctly handles overflow', t => {
   z80.registers.a = 200;
   z80.registers.e = 200;
 
-  z80.ADDR_e();
+  z80.ADDr_e();
   t.is(z80.registers.a, 144);
   t.is(z80.registers.e, 200);
   t.is(z80.registers.flags.carry, true);
@@ -35,7 +35,7 @@ test('it correctly handles zero', t => {
   z80.registers.a = 255;
   z80.registers.e = 1;
 
-  z80.ADDR_e();
+  z80.ADDr_e();
   t.is(z80.registers.a, 0);
   t.is(z80.registers.e, 1);
   t.is(z80.registers.flags.carry, true);

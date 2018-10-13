@@ -95,9 +95,9 @@ export class Z80 {
     this.addOneMTime();
   }
 
-  // TODO (nw): why is it called ADDR_e? Probably 'add register e'
+  // TODO (nw): why is it called ADDr_e? Probably 'add register e'
   // Remember: all the 'add' commands go to A
-  ADDR_e() { this._add('a', 'e'); }
+  ADDr_e() { this._add('a', 'e'); }
 
   /*
    * Compare value in register 2 to value in register 1
