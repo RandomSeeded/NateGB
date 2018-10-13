@@ -80,7 +80,7 @@ export class Z80 {
    * Value in register 2 gets added to the value in register 1
    * The sum is left in register1
    */
-  add(register1: EightBitRegister, register2: EightBitRegister): void {
+  _add(register1: EightBitRegister, register2: EightBitRegister) {
     this.registers[register1] += this.registers[register2];
     this.clearFlags();
 
@@ -95,12 +95,16 @@ export class Z80 {
     this.addOneMTime();
   }
 
+  // TODO (nw): why is it called ADDR_e? Probably 'add register e'
+  // Remember: all the 'add' commands go to A
+  ADDR_e() { this._add('a', 'e'); }
+
   /*
    * Compare value in register 2 to value in register 1
    * Sets flags (subtraction, zero, and carry) accordingly
    * TODO (nw): also possibly half-carry? Maybe.
    */
-  compare(register1: EightBitRegister, register2: EightBitRegister): void {
+  _compare(register1: EightBitRegister, register2: EightBitRegister): void {
     const difference = this.registers[register1] - this.registers[register2];
 
     this.registers.flags.subtraction = true;
@@ -113,7 +117,21 @@ export class Z80 {
     this.addOneMTime();
   }
 
+  CPr_b() { this._compare('a', 'b'); }
+
   noop(): void {
     this.addOneMTime();
+  }
+
+  readByte(): void {
+  }
+
+  readWord(): void {
+  }
+
+  writeByte(): void {
+  }
+
+  writeWord(): void {
   }
 }

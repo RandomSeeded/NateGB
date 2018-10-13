@@ -43,7 +43,7 @@ var Z80 = /** @class */ (function () {
      * Value in register 2 gets added to the value in register 1
      * The sum is left in register1
      */
-    Z80.prototype.add = function (register1, register2) {
+    Z80.prototype._add = function (register1, register2) {
         this.registers[register1] += this.registers[register2];
         this.clearFlags();
         if (this.registers[register1] % 256 === 0) {
@@ -56,12 +56,15 @@ var Z80 = /** @class */ (function () {
         this.registers[register1] = this.registers[register1] % 256;
         this.addOneMTime();
     };
+    // TODO (nw): why is it called ADDR_e? Probably 'add register e'
+    // Remember: all the 'add' commands go to A
+    Z80.prototype.ADDR_e = function () { this._add('a', 'e'); };
     /*
      * Compare value in register 2 to value in register 1
      * Sets flags (subtraction, zero, and carry) accordingly
      * TODO (nw): also possibly half-carry? Maybe.
      */
-    Z80.prototype.compare = function (register1, register2) {
+    Z80.prototype._compare = function (register1, register2) {
         var difference = this.registers[register1] - this.registers[register2];
         this.registers.flags.subtraction = true;
         if (difference === 0) {
@@ -72,8 +75,17 @@ var Z80 = /** @class */ (function () {
         }
         this.addOneMTime();
     };
+    Z80.prototype.CPr_b = function () { this._compare('a', 'b'); };
     Z80.prototype.noop = function () {
         this.addOneMTime();
+    };
+    Z80.prototype.readByte = function () {
+    };
+    Z80.prototype.readWord = function () {
+    };
+    Z80.prototype.writeByte = function () {
+    };
+    Z80.prototype.writeWord = function () {
     };
     return Z80;
 }());
