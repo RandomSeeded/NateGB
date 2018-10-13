@@ -56,9 +56,6 @@ var Z80 = /** @class */ (function () {
         this.registers[register1] = this.registers[register1] % 256;
         this.addOneMTime();
     };
-    // TODO (nw): why is it called ADDr_e? Probably 'add register e'
-    // Remember: all the 'add' commands go to A
-    Z80.prototype.ADDr_e = function () { this._add('a', 'e'); };
     /*
      * Compare value in register 2 to value in register 1
      * Sets flags (subtraction, zero, and carry) accordingly
@@ -75,6 +72,8 @@ var Z80 = /** @class */ (function () {
         }
         this.addOneMTime();
     };
+    // Naming convention: add register e
+    Z80.prototype.ADDr_e = function () { this._add('a', 'e'); };
     Z80.prototype.CPr_b = function () { this._compare('a', 'b'); };
     Z80.prototype.noop = function () {
         this.addOneMTime();

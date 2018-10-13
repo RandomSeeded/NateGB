@@ -95,9 +95,6 @@ export class Z80 {
     this.addOneMTime();
   }
 
-  // TODO (nw): why is it called ADDr_e? Probably 'add register e'
-  // Remember: all the 'add' commands go to A
-  ADDr_e() { this._add('a', 'e'); }
 
   /*
    * Compare value in register 2 to value in register 1
@@ -117,6 +114,8 @@ export class Z80 {
     this.addOneMTime();
   }
 
+  // Naming convention: add register e
+  ADDr_e() { this._add('a', 'e'); }
   CPr_b() { this._compare('a', 'b'); }
 
   noop(): void {
