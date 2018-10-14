@@ -28,8 +28,8 @@ interface Registers {
 }
 
 interface MMU {
-  readByte: (addr: number) => void;
-  readWord: (addr: number) => void;
+  readByte: (addr: number) => number;
+  readWord: (addr: number) => number;
   writeByte: (addr: number, val: number) => void;
   writeWord: (addr: number, val: number) => void;
 }
@@ -66,9 +66,11 @@ export class Z80 {
         t: 0,
       },
     };
+
+    // TODO (nw): implementation of this
     this.MMU = {
-      readByte: function(addr) {},
-      readWord: function(addr) {},
+      readByte: function(addr) { return -1; },
+      readWord: function(addr) { return -1; },
       writeByte: function(addr, val) {},
       writeWord: function(addr, val) {}
     };
@@ -83,10 +85,10 @@ export class Z80 {
     };
   }
 
-  addOneMTime(): void {
+  addMTime(cycles: number) {
     this.registers.clock = {
-      m: 1,
-      t: 4,
+      m: cycles,
+      t: 4 * cycles,
     };
   }
 
@@ -106,7 +108,7 @@ export class Z80 {
     }
     // TODO (nw): calculate the half-carry flag here as well
     this.registers[register1] = this.registers[register1] % 256;
-    this.addOneMTime();
+    this.addMTime(1);
   }
 
 
@@ -125,7 +127,7 @@ export class Z80 {
     if (difference < 0) {
       this.registers.flags.carry = true;
     }
-    this.addOneMTime();
+    this.addMTime(1);
   }
 
   /*
@@ -134,9 +136,20 @@ export class Z80 {
    */
   _push(register1: EightBitRegister, register2: EightBitRegister): void {
     this.registers.stackPointer--;
-    // this.MMU.writeByte(this.registers[register1]);
+    this.MMU.writeByte(this.registers.stackPointer, this.registers[register1]);
     this.registers.stackPointer--;
-    // this.MMU.writeByte(this.registers[register2]);
+    this.MMU.writeByte(this.registers.stackPointer, this.registers[register2]);
+    this.addMTime(3);
+  }
+
+  /*
+   * Pop the values from the stack onto the two registers provided
+   */
+  _pop(register1: EightBitRegister, register2: EightBitRegister): void {
+    this.registers[register1] = this.MMU.readByte(this.registers.stackPointer);
+    this.registers.stackPointer++;
+    this.registers[register2] = this.MMU.readByte(this.registers.stackPointer);
+    this.registers.stackPointer++;
   }
 
   // Naming convention: add register e (to a)
@@ -146,12 +159,13 @@ export class Z80 {
   CPr_b() { this._compare('a', 'b'); }
 
   // Push BC to the stack
-  PUSHBC() {
-  }
+  PUSHBC() { this._push('b', 'c'); }
+
+  // Pop HL from the stack
 
   // TODO (nw): add all remaining operations (and there are many
 
   noop(): void {
-    this.addOneMTime();
+    this.addMTime(1);
   }
 }

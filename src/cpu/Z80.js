@@ -24,9 +24,10 @@ var Z80 = /** @class */ (function () {
                 t: 0,
             },
         };
+        // TODO (nw): implementation of this
         this.MMU = {
-            readByte: function (addr) { },
-            readWord: function (addr) { },
+            readByte: function (addr) { return -1; },
+            readWord: function (addr) { return -1; },
             writeByte: function (addr, val) { },
             writeWord: function (addr, val) { }
         };
@@ -39,10 +40,10 @@ var Z80 = /** @class */ (function () {
             halfCarry: false,
         };
     };
-    Z80.prototype.addOneMTime = function () {
+    Z80.prototype.addMTime = function (cycles) {
         this.registers.clock = {
-            m: 1,
-            t: 4,
+            m: cycles,
+            t: 4 * cycles,
         };
     };
     /*
@@ -60,7 +61,7 @@ var Z80 = /** @class */ (function () {
         }
         // TODO (nw): calculate the half-carry flag here as well
         this.registers[register1] = this.registers[register1] % 256;
-        this.addOneMTime();
+        this.addMTime(1);
     };
     /*
      * Compare value in register 2 to value in register 1
@@ -76,7 +77,7 @@ var Z80 = /** @class */ (function () {
         if (difference < 0) {
             this.registers.flags.carry = true;
         }
-        this.addOneMTime();
+        this.addMTime(1);
     };
     /*
      * Push the values in the two registers provided onto the stack.
@@ -84,20 +85,30 @@ var Z80 = /** @class */ (function () {
      */
     Z80.prototype._push = function (register1, register2) {
         this.registers.stackPointer--;
-        // this.MMU.writeByte(this.registers[register1]);
+        this.MMU.writeByte(this.registers.stackPointer, this.registers[register1]);
         this.registers.stackPointer--;
-        // this.MMU.writeByte(this.registers[register2]);
+        this.MMU.writeByte(this.registers.stackPointer, this.registers[register2]);
+        this.addMTime(3);
+    };
+    /*
+     * Pop the values from the stack onto the two registers provided
+     */
+    Z80.prototype._pop = function (register1, register2) {
+        this.registers[register1] = this.MMU.readByte(this.registers.stackPointer);
+        this.registers.stackPointer++;
+        this.registers[register2] = this.MMU.readByte(this.registers.stackPointer);
+        this.registers.stackPointer++;
     };
     // Naming convention: add register e (to a)
     Z80.prototype.ADDr_e = function () { this._add('a', 'e'); };
     // Compare register (a) to b
     Z80.prototype.CPr_b = function () { this._compare('a', 'b'); };
     // Push BC to the stack
-    Z80.prototype.PUSHBC = function () {
-    };
+    Z80.prototype.PUSHBC = function () { this._push('b', 'c'); };
+    // Pop HL from the stack
     // TODO (nw): add all remaining operations (and there are many
     Z80.prototype.noop = function () {
-        this.addOneMTime();
+        this.addMTime(1);
     };
     return Z80;
 }());
