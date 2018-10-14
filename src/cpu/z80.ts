@@ -27,10 +27,18 @@ interface Registers {
   clock: Clock;
 }
 
+interface MMU {
+  readByte: Function; // TODO (nw): properly type these later
+  readWord: Function;
+  writeByte: Function;
+  writeWord: Function;
+}
+
 export class Z80 {
   programCounter: number;
   registers: Registers;
   clock: Clock;
+  MMU: MMU;
 
   constructor() {
     this.programCounter = 0;
@@ -57,6 +65,12 @@ export class Z80 {
         m: 0,
         t: 0,
       },
+    };
+    this.MMU = {
+      readByte: function() {},
+      readWord: function() {},
+      writeByte: function() {},
+      writeWord: function() {}
     };
   }
 
@@ -114,23 +128,15 @@ export class Z80 {
     this.addOneMTime();
   }
 
-  // Naming convention: add register e
+  // Naming convention: add register e (to a)
   ADDr_e() { this._add('a', 'e'); }
+
+  // Compare register (a) to b
   CPr_b() { this._compare('a', 'b'); }
+
+  // TODO (nw): add all remaining operations (and there are many
 
   noop(): void {
     this.addOneMTime();
-  }
-
-  readByte(): void {
-  }
-
-  readWord(): void {
-  }
-
-  writeByte(): void {
-  }
-
-  writeWord(): void {
   }
 }

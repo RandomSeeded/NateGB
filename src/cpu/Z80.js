@@ -24,6 +24,12 @@ var Z80 = /** @class */ (function () {
                 t: 0,
             },
         };
+        this.MMU = {
+            readByte: function () { },
+            readWord: function () { },
+            writeByte: function () { },
+            writeWord: function () { }
+        };
     }
     Z80.prototype.clearFlags = function () {
         this.registers.flags = {
@@ -72,19 +78,13 @@ var Z80 = /** @class */ (function () {
         }
         this.addOneMTime();
     };
-    // Naming convention: add register e
+    // Naming convention: add register e (to a)
     Z80.prototype.ADDr_e = function () { this._add('a', 'e'); };
+    // Compare register (a) to b
     Z80.prototype.CPr_b = function () { this._compare('a', 'b'); };
+    // TODO (nw): add all remaining operations (and there are many
     Z80.prototype.noop = function () {
         this.addOneMTime();
-    };
-    Z80.prototype.readByte = function () {
-    };
-    Z80.prototype.readWord = function () {
-    };
-    Z80.prototype.writeByte = function () {
-    };
-    Z80.prototype.writeWord = function () {
     };
     return Z80;
 }());
