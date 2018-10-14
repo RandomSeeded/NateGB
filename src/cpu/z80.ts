@@ -76,7 +76,7 @@ export class Z80 {
     };
   }
 
-  clearFlags(): void {
+  private clearFlags(): void {
     this.registers.flags = {
       zero: false,
       carry: false,
@@ -85,7 +85,7 @@ export class Z80 {
     };
   }
 
-  addMTime(cycles: number) {
+  private addMTime(cycles: number) {
     this.registers.clock = {
       m: cycles,
       t: 4 * cycles,
@@ -96,7 +96,7 @@ export class Z80 {
    * Value in register 2 gets added to the value in register 1
    * The sum is left in register1
    */
-  _add(register1: EightBitRegister, register2: EightBitRegister) {
+  private _add(register1: EightBitRegister, register2: EightBitRegister) {
     this.registers[register1] += this.registers[register2];
     this.clearFlags();
 
@@ -117,7 +117,7 @@ export class Z80 {
    * Sets flags (subtraction, zero, and carry) accordingly
    * TODO (nw): also possibly half-carry? Maybe.
    */
-  _compare(register1: EightBitRegister, register2: EightBitRegister): void {
+  private _compare(register1: EightBitRegister, register2: EightBitRegister): void {
     const difference = this.registers[register1] - this.registers[register2];
 
     this.registers.flags.subtraction = true;
@@ -134,7 +134,7 @@ export class Z80 {
    * Push the values in the two registers provided onto the stack.
    * The stack is stored in memory.
    */
-  _push(register1: EightBitRegister, register2: EightBitRegister): void {
+  private _push(register1: EightBitRegister, register2: EightBitRegister): void {
     this.registers.stackPointer--;
     this.MMU.writeByte(this.registers.stackPointer, this.registers[register1]);
     this.registers.stackPointer--;
@@ -145,11 +145,19 @@ export class Z80 {
   /*
    * Pop the values from the stack onto the two registers provided
    */
-  _pop(register1: EightBitRegister, register2: EightBitRegister): void {
+  private _pop(register1: EightBitRegister, register2: EightBitRegister): void {
     this.registers[register1] = this.MMU.readByte(this.registers.stackPointer);
     this.registers.stackPointer++;
     this.registers[register2] = this.MMU.readByte(this.registers.stackPointer);
     this.registers.stackPointer++;
+    this.addMTime(3);
+  }
+
+  private _load(register: EightBitRegister): void {
+    const addr = this.programCounter;
+    this.programCounter += 2; // TODO (nw): why 2?
+    this.registers[register] = this.MMU.readByte(addr);
+    this.addMTime(4); // TODO (nw): how do you know how many cycles it takes? Have to look it up presumably
   }
 
   // Naming convention: add register e (to a)
@@ -162,10 +170,27 @@ export class Z80 {
   PUSHBC() { this._push('b', 'c'); }
 
   // Pop HL from the stack
+  POPHL() { this._pop('h', 'l'); }
+
+  // Load value at address into register A
+  LDAmm() { this._load('a'); }
 
   // TODO (nw): add all remaining operations (and there are many
 
   noop(): void {
     this.addMTime(1);
+  }
+
+  dispatcher(): void {
+    // Fetch instruction
+    const operation = this.MMU.readByte(this.programCounter++);
+    // Dispatch (run instruction)
+    // TODO (nw): this needs a mapping between instructions and JS functions
+
+    // Mask PC to 16 bits (why?)
+
+    // Increment the clock (why?)
+    this.clock.m += this.registers.clock.m;
+    this.clock.t += this.registers.clock.t;
   }
 }

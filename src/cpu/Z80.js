@@ -98,6 +98,13 @@ var Z80 = /** @class */ (function () {
         this.registers.stackPointer++;
         this.registers[register2] = this.MMU.readByte(this.registers.stackPointer);
         this.registers.stackPointer++;
+        this.addMTime(3);
+    };
+    Z80.prototype._load = function (register) {
+        var addr = this.programCounter;
+        this.programCounter += 2; // TODO (nw): why 2?
+        this.registers[register] = this.MMU.readByte(addr);
+        this.addMTime(4); // TODO (nw): how do you know how many cycles it takes? Have to look it up presumably
     };
     // Naming convention: add register e (to a)
     Z80.prototype.ADDr_e = function () { this._add('a', 'e'); };
@@ -106,9 +113,22 @@ var Z80 = /** @class */ (function () {
     // Push BC to the stack
     Z80.prototype.PUSHBC = function () { this._push('b', 'c'); };
     // Pop HL from the stack
+    Z80.prototype.POPHL = function () { this._pop('h', 'l'); };
+    // Load value at address into register A
+    Z80.prototype.LDAmm = function () { this._load('a'); };
     // TODO (nw): add all remaining operations (and there are many
     Z80.prototype.noop = function () {
         this.addMTime(1);
+    };
+    Z80.prototype.dispatcher = function () {
+        // Fetch instruction
+        var operation = this.MMU.readByte(this.programCounter++);
+        // Dispatch (run instruction)
+        // TODO (nw): this needs a mapping between instructions and JS functions
+        // Mask PC to 16 bits (why?)
+        // Increment the clock (why?)
+        this.clock.m += this.registers.clock.m;
+        this.clock.t += this.registers.clock.t;
     };
     return Z80;
 }());
