@@ -155,7 +155,10 @@ export class Z80 {
 
   private _load(register: EightBitRegister): void {
     const addr = this.programCounter;
-    this.programCounter += 2; // TODO (nw): why 2?
+    // TODO (nw): why does this take 2 cycles?
+    // Easy answer: because that's how long it takes in the actual hardware
+    // Long answer: I don't know why that takes 2 cycles in actual hardware, you'd need to look into it
+    this.programCounter += 2;
     this.registers[register] = this.MMU.readByte(addr);
     this.addMTime(4); // TODO (nw): how do you know how many cycles it takes? Have to look it up presumably
   }
@@ -175,7 +178,7 @@ export class Z80 {
   // Load value at address into register A
   LDAmm() { this._load('a'); }
 
-  // TODO (nw): add all remaining operations (and there are many
+  // TODO (nw): add all remaining operations (and there are many)
 
   noop(): void {
     this.addMTime(1);
@@ -188,6 +191,10 @@ export class Z80 {
     // TODO (nw): this needs a mapping between instructions and JS functions
 
     // Mask PC to 16 bits (why?)
+    // This seems accurate from an emulation perspective (it is a 16-bit number)
+    // But I can't imagine under what circumstance you'd ever want to reset the program counter to 0...
+    this.programCounter = this.programCounter % 65535;
+
 
     // Increment the clock (why?)
     this.clock.m += this.registers.clock.m;
