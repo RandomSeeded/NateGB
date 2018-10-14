@@ -25,10 +25,10 @@ var Z80 = /** @class */ (function () {
             },
         };
         this.MMU = {
-            readByte: function () { },
-            readWord: function () { },
-            writeByte: function () { },
-            writeWord: function () { }
+            readByte: function (addr) { },
+            readWord: function (addr) { },
+            writeByte: function (addr, val) { },
+            writeWord: function (addr, val) { }
         };
     }
     Z80.prototype.clearFlags = function () {
@@ -78,10 +78,23 @@ var Z80 = /** @class */ (function () {
         }
         this.addOneMTime();
     };
+    /*
+     * Push the values in the two registers provided onto the stack.
+     * The stack is stored in memory.
+     */
+    Z80.prototype._push = function (register1, register2) {
+        this.registers.stackPointer--;
+        // this.MMU.writeByte(this.registers[register1]);
+        this.registers.stackPointer--;
+        // this.MMU.writeByte(this.registers[register2]);
+    };
     // Naming convention: add register e (to a)
     Z80.prototype.ADDr_e = function () { this._add('a', 'e'); };
     // Compare register (a) to b
     Z80.prototype.CPr_b = function () { this._compare('a', 'b'); };
+    // Push BC to the stack
+    Z80.prototype.PUSHBC = function () {
+    };
     // TODO (nw): add all remaining operations (and there are many
     Z80.prototype.noop = function () {
         this.addOneMTime();

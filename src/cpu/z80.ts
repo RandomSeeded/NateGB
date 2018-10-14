@@ -28,10 +28,10 @@ interface Registers {
 }
 
 interface MMU {
-  readByte: Function; // TODO (nw): properly type these later
-  readWord: Function;
-  writeByte: Function;
-  writeWord: Function;
+  readByte: (addr: number) => void;
+  readWord: (addr: number) => void;
+  writeByte: (addr: number, val: number) => void;
+  writeWord: (addr: number, val: number) => void;
 }
 
 export class Z80 {
@@ -67,10 +67,10 @@ export class Z80 {
       },
     };
     this.MMU = {
-      readByte: function() {},
-      readWord: function() {},
-      writeByte: function() {},
-      writeWord: function() {}
+      readByte: function(addr) {},
+      readWord: function(addr) {},
+      writeByte: function(addr, val) {},
+      writeWord: function(addr, val) {}
     };
   }
 
@@ -128,11 +128,26 @@ export class Z80 {
     this.addOneMTime();
   }
 
+  /*
+   * Push the values in the two registers provided onto the stack.
+   * The stack is stored in memory.
+   */
+  _push(register1: EightBitRegister, register2: EightBitRegister): void {
+    this.registers.stackPointer--;
+    // this.MMU.writeByte(this.registers[register1]);
+    this.registers.stackPointer--;
+    // this.MMU.writeByte(this.registers[register2]);
+  }
+
   // Naming convention: add register e (to a)
   ADDr_e() { this._add('a', 'e'); }
 
   // Compare register (a) to b
   CPr_b() { this._compare('a', 'b'); }
+
+  // Push BC to the stack
+  PUSHBC() {
+  }
 
   // TODO (nw): add all remaining operations (and there are many
 
